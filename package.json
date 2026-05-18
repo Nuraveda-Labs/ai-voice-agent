@@ -1,0 +1,41 @@
+{
+  "name": "ai-voice-agent",
+  "version": "0.1.0",
+  "description": "AI voice agent \u2014 LiveKit-based phone conversation engine for outbound + inbound calls",
+  "private": true,
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "setup:agent": "node src/setup-retell-agent.mjs"
+  },
+  "dependencies": {
+    "@livekit/agents": "^1.2.6",
+    "@livekit/agents-plugin-elevenlabs": "1.2.6",
+    "@livekit/agents-plugin-google": "1.2.6",
+    "@livekit/agents-plugin-livekit": "^1.2.6",
+    "@livekit/agents-plugin-openai": "^1.2.6",
+    "@livekit/agents-plugin-sarvam": "^1.2.6",
+    "@livekit/agents-plugin-silero": "^1.2.6",
+    "@prisma/client": "^6",
+    "express": "^4.21.2",
+    "livekit-server-sdk": "^2.15.1",
+    "node-fetch": "^3.3.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "prisma": "^6.19.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@ffmpeg-installer/linux-x64",
+      "onnxruntime-node",
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "protobufjs",
+      "sharp"
+    ]
+  },
+  "license": "MIT"
+}

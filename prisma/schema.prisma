@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Note that some adapters may set a maximum length for the String type by default, please ensure your strings are long
+// enough when changing adapters.
+// See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id                  String    @id
+  shop                String
+  state               String
+  isOnline            Boolean   @default(false)
+  scope               String?
+  expires             DateTime?
+  accessToken         String
+  userId              BigInt?
+  firstName           String?
+  lastName            String?
+  email               String?
+  accountOwner        Boolean   @default(false)
+  locale              String?
+  collaborator        Boolean?  @default(false)
+  emailVerified       Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+// ─── AI Voice Agent: scheduled call queue ────────────────────────
+// Replaces the in-memory setTimeout Map with a durable queue. Polled every
+// 30s by the scheduler worker in src/lib/scheduler.js.
+//
+// Lifecycle:
+//   queued      — waiting for scheduledAt <= now()
+//   dispatching — SIP participant created; LiveKit should be running the call
+//   done        — terminal: outcome recorded (confirmed / cancelled / agent_needed / callback_requested)
+//   failed      — terminal: max attempts exceeded or permanent error
+//
+// Idempotency: @@unique([shop, orderId]) prevents dup rows on Shopify retries.
+model ScheduledCall {
+  id            String    @id @default(cuid())
+  profile       String    @default("ai-voice-agent") // agent profile that handles this call
+  shop          String
+  orderId       String    @db.VarChar(64)
+  orderName     String
+  phone         String // normalized E.164
+  lang          String    @default("hi-IN")
+  payload       Json // profile-specific context (ai-voice-agent: customer_name, total, product, ...)
+  scheduledAt   DateTime
+  status        String    @default("queued")
+  attempts      Int       @default(0)
+  lastAttemptAt DateTime?
+  lastError     String?
+  roomName      String?
+  sipCallId     String?
+  outcome       String? // confirmed | cancelled | no_answer | busy | failed | agent_needed | callback_requested
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([shop, orderId])
+  @@index([status, scheduledAt])
+  @@index([roomName])
+}
+
+// One row per dispatch attempt. Audit trail for post-mortem + analytics,
+// and the anchor row for the training-data moat — every CallTurn and the
+// uploaded audio recording reference this attempt via (shop, orderId, roomName).
+model CallAttempt {
+  id              String    @id @default(cuid())
+  profile         String    @default("ai-voice-agent") // agent profile that handled this attempt
+  shop            String
+  orderId         String    @db.VarChar(64)
+  orderName       String
+  phone           String
+  roomName        String?
+  sipCallId       String?
+  startedAt       DateTime  @default(now())
+  endedAt         DateTime?
+  disposition     String? // confirmed | cancelled | no_answer | busy | failed | agent_needed | callback_requested | timeout
+  notes           String?   @db.Text
+  rawEvent        Json?
+  // ── Training-data moat columns ──────────────────────────────────────
+  audioUri        String? // e.g. gs://bucket/path.ogg or s3://... — set by /webhook/livekit/egress-ready
+  audioFormat     String? // "ogg" / "mp3" / "wav"
+  audioDurationMs Int?
+  audioSampleRate Int?
+  lang            String? // hi-IN / en-IN at call start
+  consentGiven    Boolean   @default(false) // did we play the recording disclosure before capturing audio
+  turnCount       Int       @default(0) // denormalized from CallTurn for quick filtering
+  createdAt       DateTime  @default(now())
+
+  @@index([shop, orderId])
+  @@index([roomName])
+  @@index([disposition, createdAt]) // dataset slicing by outcome + time
+}
+
+// Per-utterance transcript row. Captured in real time by the LiveKit agent
+// (src/livekit-agent.js) via POST /webhook/livekit/turn, so a crash or hangup
+// mid-call doesn't lose the first half of the conversation.
+//
+// This is the text half of the training dataset: pair against CallAttempt.audioUri
+// + CallAttempt.disposition to build (audio, transcript, outcome) tuples.
+model CallTurn {
+  id            String   @id @default(cuid())
+  shop          String
+  orderId       String   @db.VarChar(64)
+  roomName      String
+  sipCallId     String?
+  turnIndex     Int // monotonic within a call, assigned agent-side
+  role          String // "user" | "assistant" | "tool"
+  text          String   @db.Text
+  toolName      String? // when role=tool
+  toolArgs      Json? // when role=tool
+  toolResult    String?  @db.Text // when role=tool
+  lang          String? // hi-IN / en-IN at time of turn (customer may switch mid-call)
+  sttConfidence Float? // Sarvam Saaras confidence if exposed
+  startedAt     DateTime // wall-clock time of the utterance (agent-provided)
+  createdAt     DateTime @default(now())
+
+  @@unique([roomName, turnIndex]) // idempotency on retried POSTs
+  @@index([shop, orderId])
+  @@index([roomName, turnIndex]) // reconstruct a call in order
+  @@index([createdAt]) // time-range exports
+}

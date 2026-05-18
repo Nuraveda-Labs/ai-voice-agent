@@ -1,0 +1,27 @@
+[Unit]
+Description=AI Voice Agent — LiveKit voice agent worker (Priya / Sarvam Bulbul v3)
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=support
+WorkingDirectory=.
+EnvironmentFile=./.env
+Environment=PATH=/home/support/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
+# `start` is production mode (info log, no hot reload). Use `dev` locally for debug.
+ExecStart=/usr/bin/node src/livekit-agent.js start
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ai-voice-agent-agent
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=.
+
+[Install]
+WantedBy=multi-user.target

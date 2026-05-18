@@ -1,0 +1,26 @@
+[Unit]
+Description=AI Voice Agent \u2014 voice AI COD confirmation service
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=support
+WorkingDirectory=.
+EnvironmentFile=./.env
+Environment=PATH=/home/support/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/support/.npm-global/bin/pnpm start
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ai-voice-agent
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=.
+
+[Install]
+WantedBy=multi-user.target
