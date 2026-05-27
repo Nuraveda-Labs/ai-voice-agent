@@ -2,7 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE)
 [![Part of Mesh Pilot](https://img.shields.io/badge/Mesh%20Pilot-stack-black.svg)](https://meshpilot.app)
-[![Mirrored on Codeberg](https://img.shields.io/badge/codeberg-mirror-black.svg)](https://codeberg.org/Glitch_Exec_Lab/ai-voice-agent)
+[![Open on GitHub](https://img.shields.io/badge/github-Nuraveda--Labs-black.svg)](https://github.com/Nuraveda-Labs/ai-voice-agent)
+[![Mirrored on Codeberg](https://img.shields.io/badge/codeberg-mirror-black.svg)](https://codeberg.org/Nuraveda_lab/ai-voice-agent)
 
 > **Part of the [Mesh Pilot](https://meshpilot.app) open-source 6-agent marketing stack.**
 > LiveKit-based voice AI agent for outbound + inbound phone conversations — built originally for COD (cash-on-delivery) order-confirmation calls in India, but the architecture is generic.
@@ -12,8 +13,8 @@ Receives platform webhooks (Shopify orders, custom triggers), places outbound ca
 ## Quick start
 
 ```bash
-git clone https://gitlab.com/mesh-pilot/ai-voice-agent.git
-# or: git clone https://codeberg.org/Glitch_Exec_Lab/ai-voice-agent.git
+git clone https://gitlab.com/nuraveda-lab/ai-voice-agent.git
+# or: git clone https://codeberg.org/Nuraveda_lab/ai-voice-agent.git
 cd ai-voice-agent
 
 pnpm install
@@ -55,19 +56,19 @@ systemd/                          # systemd unit templates
 
 | Agent | Domain | Repo |
 |---|---|---|
-| AI Ads Agent | Meta / Google / TikTok / Amazon Ads | [mesh-pilot/ai-ads-agent](https://gitlab.com/mesh-pilot/ai-ads-agent) |
-| AI Sales Agent | Outbound B2B sales | [mesh-pilot/ai-sales-agent](https://gitlab.com/mesh-pilot/ai-sales-agent) |
-| AI Social Agent | Multi-platform posting + ORM | [mesh-pilot/ai-social-agent](https://gitlab.com/mesh-pilot/ai-social-agent) |
-| AI UGC Agent | Vertical video ad pipeline | [mesh-pilot/ai-ugc-agent](https://gitlab.com/mesh-pilot/ai-ugc-agent) |
+| AI Ads Agent | Meta / Google / TikTok / Amazon Ads | [mesh-pilot/ai-ads-agent](https://gitlab.com/nuraveda-lab/ai-ads-agent) |
+| AI Sales Agent | Outbound B2B sales | [mesh-pilot/ai-sales-agent](https://gitlab.com/nuraveda-lab/ai-sales-agent) |
+| AI Social Agent | Multi-platform posting + ORM | [mesh-pilot/ai-social-agent](https://gitlab.com/nuraveda-lab/ai-social-agent) |
+| AI UGC Agent | Vertical video ad pipeline | [mesh-pilot/ai-ugc-agent](https://gitlab.com/nuraveda-lab/ai-ugc-agent) |
 | **AI Voice Agent** | This repo | — |
-| AI SEO Agent | Shopify SEO autopilot | [mesh-pilot/ai-seo-agent](https://gitlab.com/mesh-pilot/ai-seo-agent) |
+| AI SEO Agent | Shopify SEO autopilot | [mesh-pilot/ai-seo-agent](https://gitlab.com/nuraveda-lab/ai-seo-agent) |
 
 In production they're orchestrated by **[Mesh Pilot](https://meshpilot.app)** — the closed-source cockpit that runs all six in concert with shared brand context, a single web approval inbox, and cross-agent handoffs.
 
 ## Mirrors
 
-- GitLab: [`mesh-pilot/ai-voice-agent`](https://gitlab.com/mesh-pilot/ai-voice-agent)
-- Codeberg: [`Glitch_Exec_Lab/ai-voice-agent`](https://codeberg.org/Glitch_Exec_Lab/ai-voice-agent)
+- GitLab: [`mesh-pilot/ai-voice-agent`](https://gitlab.com/nuraveda-lab/ai-voice-agent)
+- Codeberg: [`Glitch_Exec_Lab/ai-voice-agent`](https://codeberg.org/Nuraveda_lab/ai-voice-agent)
 
 ## Contributing
 
